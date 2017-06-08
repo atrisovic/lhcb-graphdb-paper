@@ -1,0 +1,39 @@
+\section{Functionality}
+
+\subsection{Methodology for preservation and recreation}
+
+The instances of the class {\it Production} consist of a sequence of steps, where every {\it Step} provides complete configuration information to rerun one stage in the data production. This configuration information is easily transformed into a \emph{Python file} that can be run in the LHCb computing environment, thus producing the data. However, the production can be run outside the CERN infrastructure, making the LHCb data replicable and sustainable for the long-term future. Next to the configuration information, other requirements include:
+\begin{itemize}
+    \item {\bf Software from CERN Virtual Machine File system (CVMFS)\footnote{Official web page of CERN VMFS: https://cernvm.cern.ch/portal/filesystem}.} CVMFS is an open  source file system designed for efficient software distribution~\cite{buncic2010cernvm}. The HEP experiments install all released software components in its final configuration on CVMFS~\cite{shiers2016cern}. 
+    \item {\bf Computing environment.} The LHCb software is developed for the Linux operating system, specifically Scientific Linux CERN 5 or 6 (slc5 or slc6 respectively). If these distributions are unavailable, it is necessary to mount an image on virtual machine or container engine such as \emph{Docker}\footnote{Official web page of the Docker technology: https://www.docker.com/} to run Linux and the LHCb computing environment from CVMFS.
+    \item {\bf Input files (RAW).} In real data processing, input files created at the LHCb detector are required. These files need to be stored in such way to be accessible from within the application. In Monte Carlo production, input files are not required as all the events are simulated inside the application.
+\end{itemize}
+
+% The procedures for building, installing and validating software releases remains under the control  and responsibility of each user  community.  We  provide  a  mechanism  to  publish  pre-built  and  configured  experiment software  releases  to  a  central  distribution  point  from  where  it  finds  its  way  to  the  running CernVM  instances  via  the  hierarchy  of  proxy  servers  or  content  delivery  networks.
+%Future work will include preserving the LHCb workflows and methods. We will assist sharing, publishing and preserving of our workflows.
+
+\subsection{Recording data provenance}
+
+Data provenance has evolved to be an integral part of best practise for long-term data preservation and research reproducibility. It certifies the origin of the data, and in computational terminology it is defined as the representation of the relationship between data items (\emph{entities}), transformations (\emph{activities}), and individuals or organisations (\emph{agents}) in a graph. These graphs capture when, by whom and how a data item was created and/or processed. Provenance systems typically concern some aspects of: data quality, replication recipes, ownership attribution, context understanding and audit~\cite{simmhan2005survey}.
+
+The LHCb graph database records the data provenance by explicitly linking the raw data sets to processing sequence they went through. It mostly follows the typical structure, except for the absence of the executor, as the activities are organized by the LHCb experiment collaboration. The LHCb software is open source and available on GitLab\footnote{GitLab repository of the LHCb software: https://gitlab.cern.ch/lhcb-core}, which allows the users to independently track the computational performance. %To complete the  provenance, we aim to add the information about the dates of data-taking.
+
+\subsection{Source for CERN Analysis Preservation portal}
+
+\emph{The CERN Analysis Preservation (CAP)} portal is a joint project across the LHC experiments at CERN~\cite{dallmeiercern}. They manage the computing resources and a portal for analysis preservation. The aim is to promote good practise in performing physics analysis and assist in analysis preservation and reproducibility. 
+
+On the web portal, analyses should be documented in a form completed by the authors. The portal can query the working group databases and the graph database to get some of the information needed in the form. The form sends a REST request with parameters and the server returns required information in JSON. Currently, the API provides the application used in a given production, and platform information for each application.
+
+\subsection{Graph mining}
+
+Graph mining is the process of finding and extracting concealed information from graphs. This information can be worthwhile for the future project management and the community, particularly for the long-term preservation activities. The information that we can easily extract from the LHCb graph database are:
+\begin{itemize}
+    \item {\bf The most used project versions.} The \emph{Project} nodes with the highest degree in the graph are the most used versions. They are likely to be often reused in future and should be preserved having this in mind.
+    \item {\bf Obsolete project versions.} On the contrary, we can identify obsolete software versions as the \emph{Project} nodes with the lowest degree. This information is valuable because we can archive and remove them in a new release of CVMFS.
+    \item {\bf Project classification.} We can classify the projects into groups where each of them run with a specific subset of the data (eg. 2011 data). This is particularly important for testing the projects against their corresponding data sets and verifying they work in the same way in the future as they work today.
+    \item {\bf Troubleshooting.} Identifying the data sets handled by a faulty software component. Given that there is a defect in one of the projects, we can search through the graph to find the affected data sets.
+\end{itemize}
+
+\subsection{Other use-cases}
+
+The graph database is regularly used in the LHCb software production, providing the information on project (module) dependencies and the order in which they should be built. Other use-cases include: recommending the latest streaming, searching and browsing through the LHCb software and data tags, finding all the modules required by a project and vice versa, finding the modules supported by a project, eg. what project are run on top of \emph{GAUDI vXrY}. This functionality is provided to the users at the web portal.
